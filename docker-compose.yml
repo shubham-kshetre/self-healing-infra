@@ -8,6 +8,7 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules.yml:/etc/prometheus/rules.yml
       - prometheus_data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -54,6 +55,11 @@ services:
     build:
       context: ./docker-service
     container_name: sample-service
+    ports:
+      - "8081:8080"  # Prometheus metrics
+      - "5001:5000"  # Flask app
+    environment:
+      - SIMULATE_HIGH_LOAD=true
     restart: unless-stopped
     
 volumes:
