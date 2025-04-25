@@ -1,0 +1,29 @@
+groups:
+  - name: docker
+    rules:
+      - alert: HighCPUUsage
+        expr: sum(rate(container_cpu_usage_seconds_total{name="sample-service"}[1m])) / count(container_cpu_usage_seconds_total{name="sample-service"}) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected in container sample-service"
+          description: "Container sample-service is using more than 80% CPU for more than 1 minute."
+          
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{name="sample-service"} / container_spec_memory_limit_bytes{name="sample-service"} * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected in container sample-service"
+          description: "Container sample-service is using more than 80% of its memory limit for more than 1 minute."
+          
+      - alert: ContainerDown
+        expr: absent(container_last_seen{name="sample-service"})
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container sample-service is down"
+          description: "Container sample-service appears to be down or not running." 
